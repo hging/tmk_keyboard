@@ -82,9 +82,9 @@ void matrix_init(void)
 
     //debug
     debug_matrix = true;
-    LED_ON();
+    //LED_ON();
     wait_ms(500);
-    LED_OFF();
+    //LED_OFF();
 }
 
 uint8_t matrix_scan(void)
