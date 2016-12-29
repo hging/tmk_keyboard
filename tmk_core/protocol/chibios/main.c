@@ -80,17 +80,17 @@ void hook_usb_suspend_loop(void) {
  * Amber LED blinker thread, times are in milliseconds.
  */
 /* set this variable to non-zero anywhere to blink once */
-// uint8_t blinkLed = 0;
+// uint8_t blinkLed = 1;
 // static THD_WORKING_AREA(waBlinkerThread, 128);
 // static THD_FUNCTION(blinkerThread, arg) {
 //   (void)arg;
-//   chRegSetThreadName("blinkOrange");
+//   chRegSetThreadName("blinker");
 //   while(true) {
 //     if(blinkLed) {
-//       blinkLed = 0;
-//       palSetPad(TEENSY_PIN13_IOPORT, TEENSY_PIN13);
+//       //blinkLed = 0;
+//       palSetPad(GPIOA, 15);
 //       chThdSleepMilliseconds(100);
-//       palClearPad(TEENSY_PIN13_IOPORT, TEENSY_PIN13);
+//       palClearPad(GPIOA, 15);
 //     }
 //     chThdSleepMilliseconds(100);
 //   }
@@ -104,9 +104,7 @@ int main(void) {
   /* ChibiOS/RT init */
   halInit();
   chSysInit();
-
-  // TESTING
-  // chThdCreateStatic(waBlinkerThread, sizeof(waBlinkerThread), NORMALPRIO, blinkerThread, NULL);
+//  chThdCreateStatic(waBlinkerThread, sizeof(waBlinkerThread), NORMALPRIO, blinkerThread, NULL);
 
   hook_early_init();
 
