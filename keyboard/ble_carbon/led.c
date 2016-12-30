@@ -22,22 +22,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 void led_set(uint8_t usb_led)
 {
     if (usb_led & (1<<USB_LED_CAPS_LOCK)) {
-    	/* generic STM32F103C8T6 board */
-#ifdef BOARD_GENERIC_STM32_F103
-        palClearPad(GPIOC, 13);
-#endif
-        /* Maple Mini */
-#ifdef BOARD_MAPLEMINI_STM32_F103
-        palSetPad(GPIOB, 1);
-#endif
+        palSetPad(GPIOA, 15);
     } else {
-    	/* generic STM32F103C8T6 board */
-#ifdef BOARD_GENERIC_STM32_F103
-    	palSetPad(GPIOC, 13);
-#endif
-        /* Maple Mini */
-#ifdef BOARD_MAPLEMINI_STM32_F103
-        palClearPad(GPIOB,1);
-#endif
+    	palClearPad(GPIOA, 15);
     }
 }

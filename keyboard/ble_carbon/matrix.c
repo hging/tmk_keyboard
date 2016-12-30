@@ -102,7 +102,6 @@ uint8_t matrix_scan(void)
             }
         }
     }
-
     return 1;
 }
 
@@ -132,13 +131,13 @@ void matrix_print(void)
  */
 static void  init_cols(void)
 {
-    palSetPadMode(GPIOB, 8, PAL_MODE_INPUT_PULLDOWN);
+    palSetPadMode(GPIOA, 0, PAL_MODE_INPUT_PULLDOWN);
 }
 
 /* Returns status of switches(1:on, 0:off) */
 static matrix_row_t read_cols(void)
-{
-    return ((palReadPad(GPIOB, 8)==PAL_LOW) ? 0 : (1<<0));
+{   
+    return ((palReadPad(GPIOA, 0)==PAL_LOW) ? 0 : (1<<0));
     // | ((palReadPad(...)==PAL_HIGH) ? 0 : (1<<1))
 }
 

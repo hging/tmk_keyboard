@@ -26,8 +26,8 @@
 /*
  * Board identifier.
  */
-#define BOARD_ST_NUCLEO64_F401RE
-#define BOARD_NAME                  "STMicroelectronics STM32 Nucleo64-F401RE"
+#define BLE_Carbon
+#define BOARD_NAME                  "BLE_Carbon"
 
 /*
  * Board oscillators-related settings.
