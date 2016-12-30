@@ -52,10 +52,20 @@ void send_remote_wakeup(USBDriver *usbp);
 
 /* secondary keyboard */
 #ifdef NKRO_ENABLE
-#define NKRO_INTERFACE    4
-#define NKRO_ENDPOINT     5
-#define NKRO_EPSIZE       16
-#define NKRO_REPORT_KEYS  (NKRO_EPSIZE - 1)
+#   define NKRO_INTERFACE    KBD_INTERFACE + 1
+#else
+#   define NKRO_INTERFACE    KBD_INTERFACE
+#endif
+
+#ifdef NKRO_ENABLE
+#   define NKRO_ENDPOINT     KBD_ENDPOINT + 1
+#else
+#   define NKRO_ENDPOINT     KBD_ENDPOINT
+#endif
+
+#ifdef NKRO_ENABLE
+#   define NKRO_EPSIZE       16
+#   define NKRO_REPORT_KEYS  (NKRO_EPSIZE - 1)
 #endif
 
 /* extern report_keyboard_t keyboard_report_sent; */
@@ -77,9 +87,18 @@ void nkro_in_cb(USBDriver *usbp, usbep_t ep);
  */
 
 #ifdef MOUSE_ENABLE
+#   define MOUSE_INTERFACE         NKRO_INTERFACE + 1
+#else
+#   define MOUSE_INTERFACE         NKRO_INTERFACE
+#endif
 
-#define MOUSE_INTERFACE         1
-#define MOUSE_ENDPOINT          2
+#ifdef MOUSE_ENABLE
+#   define MOUSE_ENDPOINT          NKRO_ENDPOINT + 1
+#else
+#   define MOUSE_ENDPOINT          NKRO_ENDPOINT
+#endif
+
+#ifdef MOUSE_ENABLE
 #define MOUSE_EPSIZE            8
 
 /* mouse IN request callback handler */
@@ -92,9 +111,18 @@ void mouse_in_cb(USBDriver *usbp, usbep_t ep);
  */
 
 #ifdef EXTRAKEY_ENABLE
+#   define EXTRA_INTERFACE         MOUSE_INTERFACE + 1
+#else
+#   define EXTRA_INTERFACE         MOUSE_INTERFACE
+#endif
 
-#define EXTRA_INTERFACE         3
-#define EXTRA_ENDPOINT          4
+#ifdef EXTRAKEY_ENABLE
+#   define EXTRA_ENDPOINT          MOUSE_ENDPOINT + 1
+#else
+#   define EXTRA_ENDPOINT          MOUSE_ENDPOINT
+#endif
+
+#ifdef EXTRAKEY_ENABLE
 #define EXTRA_EPSIZE            8
 
 /* extrakey IN request callback handler */
@@ -113,9 +141,22 @@ typedef struct {
  */
 
 #ifdef CONSOLE_ENABLE
+#   define CONSOLE_INTERFACE      EXTRA_INTERFACE + 1
+#else
+#   define CONSOLE_INTERFACE      EXTRA_INTERFACE
+#endif
 
-#define CONSOLE_INTERFACE      2
-#define CONSOLE_ENDPOINT       3
+#ifdef CONSOLE_ENABLE
+#   define CONSOLE_ENDPOINT       EXTRA_ENDPOINT + 1
+#else
+#   define CONSOLE_ENDPOINT       EXTRA_ENDPOINT
+#endif
+
+#if defined(STM32F401xE) && CONSOLE_ENDPOINT >= 4
+#   error "STM32F401xE only supports 4 endpoints maximum, please remove some functions"
+#endif
+
+#ifdef CONSOLE_ENABLE
 #define CONSOLE_EPSIZE         16
 
 /* Number of IN reports that can be stored inside the output queue */

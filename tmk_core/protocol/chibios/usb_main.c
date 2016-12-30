@@ -429,7 +429,7 @@ static const uint8_t hid_configuration_descriptor_data[] = {
   USB_DESC_WORD(sizeof(mouse_hid_report_desc_data)), // wDescriptorLength
 
   /* Endpoint Descriptor (7 bytes) USB spec 9.6.6, page 269-271, Table 9-13 */
-  USB_DESC_ENDPOINT(MOUSE_ENDPOINT | 0x80,  // bEndpointAddress
+  USB_DESC_ENDPOINT((MOUSE_ENDPOINT) | 0x80,  // bEndpointAddress
                     0x03,      // bmAttributes (Interrupt)
                     MOUSE_EPSIZE,  // wMaxPacketSize
                     1),        // bInterval
@@ -455,7 +455,7 @@ static const uint8_t hid_configuration_descriptor_data[] = {
   USB_DESC_WORD(sizeof(console_hid_report_desc_data)), // wDescriptorLength
 
   /* Endpoint Descriptor (7 bytes) USB spec 9.6.6, page 269-271, Table 9-13 */
-  USB_DESC_ENDPOINT(CONSOLE_ENDPOINT | 0x80,  // bEndpointAddress
+  USB_DESC_ENDPOINT((CONSOLE_ENDPOINT) | 0x80,  // bEndpointAddress
                     0x03,      // bmAttributes (Interrupt)
                     CONSOLE_EPSIZE, // wMaxPacketSize
                     1),        // bInterval
@@ -481,7 +481,7 @@ static const uint8_t hid_configuration_descriptor_data[] = {
   USB_DESC_WORD(sizeof(extra_hid_report_desc_data)), // wDescriptorLength
 
   /* Endpoint Descriptor (7 bytes) USB spec 9.6.6, page 269-271, Table 9-13 */
-  USB_DESC_ENDPOINT(EXTRA_ENDPOINT | 0x80,  // bEndpointAddress
+  USB_DESC_ENDPOINT((EXTRA_ENDPOINT) | 0x80,  // bEndpointAddress
                     0x03,      // bmAttributes (Interrupt)
                     EXTRA_EPSIZE, // wMaxPacketSize
                     10),       // bInterval
@@ -507,7 +507,7 @@ static const uint8_t hid_configuration_descriptor_data[] = {
   USB_DESC_WORD(sizeof(nkro_hid_report_desc_data)), // wDescriptorLength
 
   /* Endpoint Descriptor (7 bytes) USB spec 9.6.6, page 269-271, Table 9-13 */
-  USB_DESC_ENDPOINT(NKRO_ENDPOINT | 0x80,  // bEndpointAddress
+  USB_DESC_ENDPOINT((NKRO_ENDPOINT) | 0x80,  // bEndpointAddress
                     0x03,      // bmAttributes (Interrupt)
                     NKRO_EPSIZE, // wMaxPacketSize
                     1),       // bInterval
@@ -823,6 +823,9 @@ static void usb_event_cb(USBDriver *usbp, usbevent_t event) {
     hook_usb_wakeup();
     return;
 
+  case USB_EVENT_UNCONFIGURED:
+    return;
+
   case USB_EVENT_STALLED:
     return;
   }
@@ -1002,19 +1005,17 @@ static bool usb_request_hook_cb(USBDriver *usbp) {
 
   return FALSE;
 }
-
 /* Start-of-frame callback */
-static void usb_sof_cb(USBDriver *usbp) {
-  kbd_sof_cb(usbp);
-}
-
+// static void usb_sof_cb(USBDriver *usbp) {
+//   kbd_sof_cb(usbp);
+// }
 
 /* USB driver configuration */
 static const USBConfig usbcfg = {
   usb_event_cb,                 /* USB events callback */
   usb_get_descriptor_cb,        /* Device GET_DESCRIPTOR request callback */
   usb_request_hook_cb,          /* Requests hook callback */
-  usb_sof_cb                    /* Start Of Frame callback */
+  NULL                    /* Start Of Frame callback */
 };
 
 /*
@@ -1054,6 +1055,10 @@ void send_remote_wakeup(USBDriver *usbp) {
   STM32_USB->CNTR |= CNTR_RESUME;
   chThdSleepMilliseconds(15);
   STM32_USB->CNTR &= ~CNTR_RESUME;
+#elif defined(STM32F401xx)
+  usbp->otg->DCTL |= DCTL_RWUSIG;
+  chThdSleepMilliseconds(15);
+  usbp->otg->DCTL &= ~DCTL_RWUSIG;
 #else /* STM32F0XX || STM32F1XX */
 #warning Sending remote wakeup packet not implemented for your platform.
 #endif /* K20x || KL2x */
@@ -1083,9 +1088,11 @@ void nkro_in_cb(USBDriver *usbp, usbep_t ep) {
 /* start-of-frame handler
  * TODO: i guess it would be better to re-implement using timers,
  *  so that this is not going to have to be checked every 1ms */
+/*
 void kbd_sof_cb(USBDriver *usbp) {
   (void)usbp;
 }
+*/
 
 /* Idle requests timer code
  * callback (called from ISR, unlocked state) */
